@@ -67,9 +67,6 @@ public class ChatController {
         return ResponseEntity.ok(chatRooms);
     }
 
-//    @GetMapping("/receivers/{receiverId}")
-//    public ResponseEntity<>
-
     /**
      * 특정 채팅방의 세부 정보를 가져오는 메서드
      * 채팅방 목록에 특정한 채팅 리스트 아이템 클릭할 때 호출됨

@@ -66,12 +66,14 @@ public class ChatService {
             // 채팅방이 존재하는 경우
             // 기존 채팅방을 가져와서 반환한다.
             chatRoom = chatRoomOptional.get();
+            System.out.println("채팅방 가져옴:" + chatRoom);
         } else {
             // 새로운 채팅방 생성함
             chatRoom = new ChatRoom();
             chatRoom.setSenderId(sender.getId());
             chatRoom.setReceiverId(receiver.getId());
             chatRoom = chatRoomRepository.save(chatRoom);
+            System.out.println("채팅방 생성:" + chatRoom);
         }
 
         // DTO로 변환하여 반환함.
@@ -143,19 +145,30 @@ public class ChatService {
         chatMessage.setChatRoom(chatRoom);
         chatMessage.setSender(sender);
         chatMessage.setMessageContent(chatMessageDto.getMessageContent()); // 수정된 부분
+        chatMessage.setTimestamp(Optional.ofNullable(chatMessageDto.getTimestamp()).orElse(LocalDateTime.now())); // 타임스탬프 설정
 
 
-        chatMessage.setTimestamp(chatMessageDto.getTimestamp() != null ?
-                chatMessageDto.getTimestamp() : LocalDateTime.now());
+//        chatMessage.setTimestamp(chatMessageDto.getTimestamp() != null ?
+//                chatMessageDto.getTimestamp() : LocalDateTime.now());
+//
+//        chatMessageRepository.save(chatMessage);
 
+        // 메시지 저장
         chatMessageRepository.save(chatMessage);
 
-        // FIXME: 이거 마저 코드 작성해야함!
-//        // ChatRoom의 last_message와 last_message_time 업데이트
-//        chatRoom.setLastMessage(chatMessageDto.getMessageContent());
-//        chatRoom.setLastMessageTime(LocalDateTime.now
+//        // FIXME: 이거 마저 코드 작성해야함!
+////        // ChatRoom의 last_message와 last_message_time 업데이트
+////        chatRoom.setLastMessage(chatMessageDto.getMessageContent());
+////        chatRoom.setLastMessageTime(LocalDateTime.now
+//
+//        chatRoomRepository.save(chatRoom); // 변경 사항을 저장
 
-        chatRoomRepository.save(chatRoom); // 변경 사항을 저장
+        // ChatRoom의 마지막 메시지 정보 업데이트
+        chatRoom.setLastMessage(chatMessageDto.getMessageContent());  // 마지막 메시지 내용 업데이트
+        chatRoom.setLastMessageTime(LocalDateTime.now());             // 마지막 메시지 시간 업데이트
+
+        // 채팅방 변경 사항 저장
+        chatRoomRepository.save(chatRoom);
     }
 
     /**
