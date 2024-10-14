@@ -1,0 +1,157 @@
+.product-detail-inbox {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+    margin: 0 auto; /* 가운데 정렬 */
+    width: 70%;
+}
+
+.product-detail__image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-right: 20px;
+}
+
+.product-detail__image img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.product-detail__info {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.product-detail__price {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: left;
+    border-bottom: 1px solid #ccc; /* 하단 구분선 */
+    padding-bottom: 30px;
+}
+
+.product-detail__status {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.product-detail__status p {
+    margin: 5px 0;
+    text-align: left;
+}
+
+.product-detail__label {
+    color: #888; /* 연한 색상 적용 */
+}
+
+.product-detail__value {
+    color: #000; /* 기본 색상 적용, 필요 시 생략 가능 */
+}
+
+.product-detail__actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-detail__like,
+.product-detail__chat,
+.product-detail__buy {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.product-detail__like {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+}
+
+.product-detail__chat {
+    background-color: orange;
+    color: white;
+    border: none;
+}
+
+.product-detail__buy {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.product-detail__bottom {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+    margin: 0 auto; /* 가운데 정렬 */
+    width: 70%;
+    padding: 20px 0; /* 상하 여백을 더 넓게 설정 */
+    border-top: 3px solid #333; /* 더 진하고 굵은 구분선 */
+}
+
+.product-detail__additional-info {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    margin-right: 40px;
+    width: 70%;
+}
+
+.product-detail__description {
+    margin-left: 20px;
+    text-align: left;
+}
+
+.product-detail__divider {
+    width: 1px; /* 구분선의 너비 */
+    background-color: #ccc; /* 연한 색상 */
+    margin: 0 20px; /* 좌우 여백 */
+}
+
+.store-info {
+    width: 30%; /* 상점정보 영역 */
+    padding-left: 20px; /* 구분선과의 여백 */
+}
+
+.product-detail__additional-info h2, .store-info h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333; /* 텍스트 색상 */
+    font-weight: bold; /* 글자 굵기 */
+    text-align: left; /* 텍스트 정렬 */
+    padding: 10px 0; /* 상하 여백 */
+    border-bottom: 1px solid #ccc; /* 하단 구분선 */
+}
+
+.store-info p {
+    text-align: left; /* 내부 <p> 요소들을 좌측 정렬 */
+    margin-bottom: 10px;
+}
+
+.store-move-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #f0f0f0;
+    color: #000000; /* 글자 색상을 검정색으로 변경 */
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1em;
+    width: 100%
+}
+
+.store-move-button:hover {
+    background-color: #e0e0e0; /* 호버 효과 */
+}
+

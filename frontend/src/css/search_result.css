@@ -1,0 +1,12 @@
+.search-results-container h1{
+    margin-top: 130px;
+}
+
+.search-results {
+    display: flex;
+    flex-wrap: wrap; /* 아이템을 여러 줄로 배치 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    width: 100%;
+    box-sizing: border-box;
+    gap: 10px; /* 아이템 간의 간격을 위해 gap 추가 */
+}

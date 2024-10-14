@@ -1,0 +1,50 @@
+/* 헤더 스타일 */
+#header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+    backdrop-filter: blur(10px); /* 배경 블러 효과 */
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 하단 그림자 */
+    height: 80px; /* 헤더 높이 */
+}
+
+/* 헤더 내부 스타일 */
+.header__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px; /* 패딩 조정 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 로고 스타일 */
+.header__logo h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.header__logo a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 본문에 상단 여백 추가 */
+body {
+    margin-top: 80px; /* 헤더 높이만큼 여백 추가 */
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .header__inner {
+        padding: 10px;
+    }
+
+    .header__logo h1 {
+        font-size: 20px;
+    }
+}

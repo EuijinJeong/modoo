@@ -1,0 +1,18 @@
+.sidebar {
+    width: 20%;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.saved-items,
+.recent-items {
+    margin-bottom: 20px;
+}
+
+.saved-items h3,
+.recent-items h3 {
+    margin-bottom: 10px;
+}

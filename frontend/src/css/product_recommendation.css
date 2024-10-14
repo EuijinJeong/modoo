@@ -1,0 +1,22 @@
+.product-recommendation {
+    flex: 1;
+    padding: 20px;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap; /* 아이템을 여러 줄로 배치 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.product-item {
+    width: calc(20% - 20px);
+    margin: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 4px;
+}
