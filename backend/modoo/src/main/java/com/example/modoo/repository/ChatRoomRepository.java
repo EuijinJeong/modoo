@@ -14,5 +14,13 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
      * @return: 이사람이 sender인 ChatRoom을 리스트 형태로 반환함.
      */
     List<ChatRoom> findBySenderId(Long senderId);
+
+    /**
+     *
+     * @param senderId
+     * @param receiverId
+     * @return
+     */
+    List<ChatRoom> findBySenderIdOrReceiverId(Long senderId, Long receiverId);
 }
 

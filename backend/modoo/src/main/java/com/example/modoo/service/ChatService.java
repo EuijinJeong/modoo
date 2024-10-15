@@ -13,12 +13,19 @@ import com.example.modoo.repository.MemberRepository;
 import com.example.modoo.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ *
+ *
+ *
+ * @author jeong-uijin
+ */
 @Service
 public class ChatService {
 
@@ -89,9 +96,12 @@ public class ChatService {
     public List<ChatRoomDto> getUserChatRooms(String email) {
         // 현재 로그인한 사용자의 정보
         Member user = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("해당 사용자의 이메일을 찾을 수 없습니다." + email));
+                .orElseThrow(() -> new RuntimeException("해당 사용자의 이메일을 찾을 수 없습니다: " + email));
 
-        List<ChatRoom> chatRooms = chatRoomRepository.findBySenderId(user.getId());
+        // 발신자 또는 수신자로 참여한 모든 채팅방 조회
+        List<ChatRoom> chatRooms = chatRoomRepository.findBySenderIdOrReceiverId(user.getId(), user.getId());
+
+        // ChatRoom을 DTO로 변환
         return chatRooms.stream()
                 .map(chatRoom -> convertToDto(chatRoom, user.getId())) // currentUserId로 user.getId() 전달
                 .collect(Collectors.toList());
@@ -131,6 +141,7 @@ public class ChatService {
      *
      * @param chatMessageDto
      */
+    @Transactional
     public void saveMessage(ChatMessageDto chatMessageDto) {
         // ChatRoom 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
@@ -144,28 +155,15 @@ public class ChatService {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setChatRoom(chatRoom);
         chatMessage.setSender(sender);
-        chatMessage.setMessageContent(chatMessageDto.getMessageContent()); // 수정된 부분
-        chatMessage.setTimestamp(Optional.ofNullable(chatMessageDto.getTimestamp()).orElse(LocalDateTime.now())); // 타임스탬프 설정
-
-
-//        chatMessage.setTimestamp(chatMessageDto.getTimestamp() != null ?
-//                chatMessageDto.getTimestamp() : LocalDateTime.now());
-//
-//        chatMessageRepository.save(chatMessage);
+        chatMessage.setMessageContent(chatMessageDto.getMessageContent());
+        chatMessage.setTimestamp(Optional.ofNullable(chatMessageDto.getTimestamp()).orElse(LocalDateTime.now()));
 
         // 메시지 저장
         chatMessageRepository.save(chatMessage);
 
-//        // FIXME: 이거 마저 코드 작성해야함!
-////        // ChatRoom의 last_message와 last_message_time 업데이트
-////        chatRoom.setLastMessage(chatMessageDto.getMessageContent());
-////        chatRoom.setLastMessageTime(LocalDateTime.now
-//
-//        chatRoomRepository.save(chatRoom); // 변경 사항을 저장
-
         // ChatRoom의 마지막 메시지 정보 업데이트
-        chatRoom.setLastMessage(chatMessageDto.getMessageContent());  // 마지막 메시지 내용 업데이트
-        chatRoom.setLastMessageTime(LocalDateTime.now());             // 마지막 메시지 시간 업데이트
+        chatRoom.setLastMessage(chatMessageDto.getMessageContent());
+        chatRoom.setLastMessageTime(LocalDateTime.now());
 
         // 채팅방 변경 사항 저장
         chatRoomRepository.save(chatRoom);

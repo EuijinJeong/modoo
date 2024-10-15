@@ -1,48 +1,28 @@
-// const { override, addWebpackPlugin } = require('customize-cra');
-// const webpack = require('webpack');
-//
-// module.exports = {
-//     webpack: override(
-//         addWebpackPlugin(
-//             new webpack.ProvidePlugin({
-//                 process: 'process/browser',
-//             })
-//         ),
-//         config => {
-//             config.resolve.fallback = {
-//                 ...config.resolve.fallback,
-//                 "process": require.resolve("process/browser"),
-//             };
-//             return config;
-//         }
-//     ),
-//     devServer: (configFunction) => (proxy, allowedHost) => {
-//         const config = configFunction(proxy, allowedHost);
-//         config.allowedHosts = ['localhost'];
-//         return config;
-//     },
-// };
-const { override, addWebpackPlugin } = require('customize-cra');
 const webpack = require('webpack');
 
 module.exports = {
-    webpack: override(
-        addWebpackPlugin(
+    webpack: (config, env) => {
+        // process/browser 설정 추가 (폴리필)
+        config.resolve.fallback = {
+            ...config.resolve.fallback,
+            "process": require.resolve("process/browser"),
+        };
+
+        // Webpack의 ProvidePlugin을 사용하여 전역적으로 process 변수를 제공
+        config.plugins.push(
             new webpack.ProvidePlugin({
                 process: 'process/browser',
             })
-        ),
-        config => {
-            config.resolve.fallback = {
-                ...config.resolve.fallback,
-                "process": require.resolve("process/browser"),
-            };
-            return config;
-        }
-    ),
-    devServer: configFunction => (proxy, allowedHost) => {
-        const config = configFunction(proxy, allowedHost);
-        config.allowedHosts = ['localhost']; // 또는 'all'로 설정
+        );
+
+        // fullySpecified 설정 추가 (확장자 명시 문제 해결)
+        config.module.rules.unshift({
+            test: /\.m?js$/,
+            resolve: {
+                fullySpecified: false, // 확장자 명시 안 해도 되도록 설정
+            },
+        });
+
         return config;
     },
 };

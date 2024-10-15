@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import ChatRoomList from "./ChatRoomList";
 import ChatRoom from "./ChatRoom";
-import "../css/chat_room_wrapper.css"
+import "../css/chat_room_wrapper.css";
 
 /**
  *
@@ -11,26 +11,27 @@ import "../css/chat_room_wrapper.css"
  * @returns {Element}
  * @constructor
  */
-const ChatRoomWrapper = ({ storeId, roomId }) => {
-    const [selectedChat, setSelectedChat] = useState(null);
+const ChatRoomWrapper = ({ roomId }) => {
+  const [selectedChat, setSelectedChat] = useState(null);
 
-    useEffect(() => {
-        // 필요한 초기화 작업
-    }, [storeId]);
-
-    const handleChatSelect = (chat) => {
-        setSelectedChat(chat);
-        console.log("선택된 채팅방의 고유 아이디값: ", roomId);
+  useEffect(() => {
+    // 필요한 초기화 작업
+    if (roomId) {
+      setSelectedChat({ id: roomId });
     }
+  }, [roomId]);
 
-    return (
-        <div>
-            <ChatRoomList storeId={storeId} setSelectedChat={setSelectedChat} />
-            {selectedChat && (
-                <ChatRoom roomId={selectedChat.id} />
-            )}
-        </div>
-    );
+  const handleChatSelect = (chat) => {
+    setSelectedChat(chat);
+    console.log("선택된 채팅방의 고유 아이디값: ", chat.id);
+  };
+
+  return (
+    <div className="chat-room-wrapper">
+      <ChatRoomList setSelectedChat={handleChatSelect} />
+      {selectedChat && <ChatRoom roomId={selectedChat.id} />}
+    </div>
+  );
 };
 
 export default ChatRoomWrapper;
