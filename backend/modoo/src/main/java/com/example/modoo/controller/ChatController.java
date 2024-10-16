@@ -57,18 +57,16 @@ public class ChatController {
     }
 
     /**
-     * 현재 로그인한 사용자가 참여하고 있는 모든 채팅방 목록을 가져온느 메서드
+     * 현재 로그인한 사용자가 참여하고 있는 모든 채팅방 목록을 가져오는 메서드
      * @return 사용자가 참여하고 있는 채팅방 목록
      */
     @GetMapping("/chat-room-lists")
     public ResponseEntity<List<ChatRoomDto>> getUserChatRoomLists() {
         String userEmail = userEmailLookupService.getCurrentUserEmail(); // 현재 로그인한 사용자의 정보 가져옴
+        // 발신자 또는 수신자로 참여한 모든 채팅방 목록을 가져옴
         List<ChatRoomDto> chatRooms = chatService.getUserChatRooms(userEmail);
         return ResponseEntity.ok(chatRooms);
     }
-
-//    @GetMapping("/receivers/{receiverId}")
-//    public ResponseEntity<>
 
     /**
      * 특정 채팅방의 세부 정보를 가져오는 메서드
@@ -128,6 +126,40 @@ public class ChatController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
+    }
+
+    /**
+     *
+     * @param receiverId
+     * @return
+     */
+    @GetMapping("/receivers/{receiverId}")
+    public ResponseEntity<Map<String, Object>> getReceiverInfo(@PathVariable Long receiverId) {
+        try {
+            // Member 정보 조회
+            Optional<Member> memberOptional = memberRepository.findById(receiverId);
+            if (memberOptional.isPresent()) {
+                Member member = memberOptional.get();
+
+                // 클라이언트에 전달할 정보 설정
+                Map<String, Object> receiverInfo = new HashMap<>();
+                receiverInfo.put("email", member.getEmail());
+                receiverInfo.put("studentId", member.getStudentId());  // 학번 정보가 있다고 가정
+
+                return ResponseEntity.ok(receiverInfo);
+            } else {
+                // 예외처리: receiver 정보를 찾을 수 없는 경우, Map으로 에러 메시지 반환
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Receiver 정보를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 서버 오류 시, Map으로 에러 메시지 반환
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "서버 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }

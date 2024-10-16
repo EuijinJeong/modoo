@@ -29,7 +29,10 @@ public class StoreController {
     @Autowired
     private UserEmailLookupService userEmailLookupService;
 
-    // 현재 사용자의 상점 정보를 조회
+    /**
+     * 현재 사용자의 상점 정보를 조회한다.
+     * @return
+     */
     @GetMapping("/current")
     public ResponseEntity<StoreDto> getStoreForCurrentUser() {
         try {
@@ -37,7 +40,7 @@ public class StoreController {
             System.out.println(storeDto + " 객체가 잘 반환되는지 확인하는 코드");
             return ResponseEntity.ok(storeDto);
         } catch (Exception e) {
-            e.printStackTrace(); // 콘솔에 스택 트레이스 출력
+//            e.printStackTrace(); // 콘솔에 스택 트레이스 출력
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
