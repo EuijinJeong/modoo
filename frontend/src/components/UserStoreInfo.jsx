@@ -67,7 +67,6 @@ const UserStoreInfo = ({ storeId }) => {
       </div>
       <div className="store-products-container">
         <MyProducts products={products} storeId={storeId} />{" "}
-        {/* products와 storeId를 MyProducts에 전달 */}
       </div>
     </div>
   );

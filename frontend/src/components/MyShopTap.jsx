@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ProductItem from "./ProductItem";
 import MyProducts from "./MyProducts";
 import "../css/my_shop_tap.css";
 import axios from "axios";
@@ -67,34 +66,6 @@ const MyShopTap = () => {
     setActiveTab(tab);
   };
 
-  //   return (
-  //     <div>
-  //       <div className="category-tabs">
-  //         <button
-  //           className={`tab ${activeTab === "products" ? "active" : ""}`}
-  //           onClick={() => handleTabClick("products")}
-  //         >
-  //           상품 {products.length}
-  //         </button>
-  //         <button
-  //           className={`tab ${activeTab === "wishlist" ? "active" : ""}`}
-  //           onClick={() => handleTabClick("wishlist")}
-  //         >
-  //           찜
-  //         </button>
-  //       </div>
-  //       {activeTab === "products" && (
-  //         <div>
-  //           <MyProducts products={products} storeId={storeId} />
-  //         </div>
-  //       )}
-  //       {activeTab === "wishlist" && (
-  //         <div className="wishlist-list">
-  //           <p>찜한 상품 목록이 여기에 표시됩니다.</p>
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
   return (
     <div>
       <div className="category-tabs">
@@ -104,8 +75,7 @@ const MyShopTap = () => {
         >
           상품 {products.length}
         </button>
-
-        {/* 본인의 상점인 경우에만 찜 탭을 표시 */}
+        {/* isMyStore 상태에 따라 찜 탭을 조건부로 표시 */}
         {isMyStore && (
           <button
             className={`tab ${activeTab === "wishlist" ? "active" : ""}`}
@@ -121,10 +91,10 @@ const MyShopTap = () => {
           <MyProducts products={products} storeId={storeId} />
         </div>
       )}
-
       {activeTab === "wishlist" && isMyStore && (
         <div className="wishlist-list">
           <p>찜한 상품 목록이 여기에 표시됩니다.</p>
+          {/* 여기에 찜한 상품 목록을 표시하는 컴포넌트를 추가할 수 있어 */}
         </div>
       )}
     </div>
