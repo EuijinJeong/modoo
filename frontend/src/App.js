@@ -11,9 +11,8 @@ import RequireAuth from "./components/RequireAuth";
 import SearchResultPage from "./pages/SearchResultPage";
 import ChatRoomPage from "./pages/ChatRoomPage";
 import CheckOutPage from "./pages/CheckOutPage";
-import PaymentSuccess from "./pages/PaymentSuccessPage";
-import PaymentFailure from "./pages/PaymentFailurePage";
-
+import PaymentFailurePage from "./pages/PaymentFailurePage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 function App() {
   return (
     <Router>

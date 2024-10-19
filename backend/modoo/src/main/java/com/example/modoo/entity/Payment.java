@@ -7,27 +7,35 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "order")
 @Getter
 @Setter
-public class Order {
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String impUid; // 아임포트 결제 고유 ID
+
+    @Column(nullable = false)
+    private int amount; // 결제 금액
+
+    @Column(nullable = false)
+    private String status; // 결제 상태 (예: "PAID", "CANCELLED")
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime cancelledAt;
+
     @ManyToOne
-    @JoinColumn(name = "member_id")  // 회원 정보 연관
+    @JoinColumn(name = "member_id", nullable = false)  // 회원 정보 연관
     private Member member;
 
     @ManyToOne
     @JoinColumn(name = "product_id")  // 상품 정보 연관
     private Product product;
-
-    private int price;  // 결제 금액
-
-    // FIXME: 이거 고쳐야할 수도 있음
-    private String paymentStatus;  // 결제 상태 (예: '완료', '취소' 등)
-    private LocalDateTime orderDate;
 
     @OneToOne
     @JoinColumn(name = "member_address_id")

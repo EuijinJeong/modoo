@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import "../css/payment_success.css";
+// import "../css/payment_success.css";
 
 /**
  * 결제 성공시 클라이언트에게 전달되는 페이지이다.

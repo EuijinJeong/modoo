@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import "../css/payment_failure.css";
+// import "../css/payment_failure.css";
 
 /**
  * 결제 실패시 클라이언트에게 전달되는 페이지이다.

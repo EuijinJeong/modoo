@@ -1,7 +1,10 @@
 package com.example.modoo.repository;
 
-import com.example.modoo.entity.Order;
+import com.example.modoo.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+import java.util.Optional;
+
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    Optional<Payment> findByImpUid(String impUid);
 }
