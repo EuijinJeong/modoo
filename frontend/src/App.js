@@ -11,7 +11,8 @@ import RequireAuth from "./components/RequireAuth";
 import SearchResultPage from "./pages/SearchResultPage";
 import ChatRoomPage from "./pages/ChatRoomPage";
 import CheckOutPage from "./pages/CheckOutPage";
-
+import PaymentFailurePage from "./pages/PaymentFailurePage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 function App() {
   return (
     <Router>
@@ -88,6 +89,22 @@ function App() {
           element={
             <RequireAuth>
               <CheckOutPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/payment-success"
+          element={
+            <RequireAuth>
+              <PaymentSuccessPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/payment-failure"
+          element={
+            <RequireAuth>
+              <PaymentFailurePage />
             </RequireAuth>
           }
         />

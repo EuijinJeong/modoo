@@ -7,8 +7,9 @@ import lombok.Setter;
 @Setter
 public class PaymentRequestDto {
 
-    private MemberResponseDto member;
-    private ProductDto product;
-    private int price;
+    private Long memberId;
+    private Long productId;
+    private int amount;
+    private String impUid;
     private AddressDto address;
 }
