@@ -36,9 +36,6 @@ public class PaymentService {
      */
     @Transactional
     public boolean verifiedPayment(PaymentVerifiedDto paymentVerifiedDto) {
-
-        // FIXME: PaymentVerifiedDto의 productId가 null로 들어옴.
-
         Product product = this.productRepository.findById(paymentVerifiedDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product is not found"));
 

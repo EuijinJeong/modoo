@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import "../css/user_dashboard_header.css";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // Include CSS for styling
+import axios from "axios";
 
 const UserDashboardHeader = () => {
   const [show, setShow] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
 
   const toggleMenu = () => {
     setShow((prevShow) => !prevShow);
@@ -110,10 +119,25 @@ const UserDashboardHeader = () => {
                 모두톡
               </a>
             </li>
-            <li>
-              <button onClick={handleLogout} className="logout-button">
-                로그아웃
-              </button>
+            {/* 마이페이지에 hover 시에 로그아웃과 마이페이지 옵션 표시 */}
+            <li
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="mypage-menu"
+            >
+              <span className="dropdown-title">마이페이지</span>
+              {isHovered && (
+                <ul className="dropdown-list">
+                  <li>
+                    <Link to="/MyPage">마이페이지</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="logout-button">
+                      로그아웃
+                    </button>
+                  </li>
+                </ul>
+              )}
             </li>
           </ul>
         </nav>
