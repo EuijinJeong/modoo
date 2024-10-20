@@ -5,10 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PaymentVerifiedDto {
-    private String impUid;
-    private Integer amount;
-    private Long productId;
+public class OrderHistoryDto {
     private String userEmail;
+    private Long productId;
+    private int amount;
+    private String impUid;
     private String orderDate;
 }
