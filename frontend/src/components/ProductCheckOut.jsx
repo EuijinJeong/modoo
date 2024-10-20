@@ -10,7 +10,6 @@ const ProductCheckOut = () => {
 
   // ProductDetail에서 넘겨준 상품 정보를 받아옴
   const product = location.state?.product;
-  const [memberId, setMemberId] = useState(null);
 
   // 배송지 정보를 관리하는 상태
   const [address, setAddress] = useState({
@@ -23,7 +22,6 @@ const ProductCheckOut = () => {
 
   // 다음 우편번호 API 스크립트 로드
   useEffect(() => {
-    console.log("memberId" + memberId);
     const script = document.createElement("script");
     script.src =
       "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
@@ -77,43 +75,43 @@ const ProductCheckOut = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    // 유효성 검사 (예: 필수 입력 필드가 비어 있는지 확인)
-    if (
-      !address.recipient ||
-      !address.phone ||
-      !address.addressLine1 ||
-      !address.postalCode
-    ) {
-      alert("모든 필수 필드를 입력해 주세요.");
-      return;
-    }
+  //   // 유효성 검사 (예: 필수 입력 필드가 비어 있는지 확인)
+  //   if (
+  //     !address.recipient ||
+  //     !address.phone ||
+  //     !address.addressLine1 ||
+  //     !address.postalCode
+  //   ) {
+  //     alert("모든 필수 필드를 입력해 주세요.");
+  //     return;
+  //   }
 
-    try {
-      // 서버로 데이터 전송
-      const token = localStorage.getItem("token"); // Authorization 토큰을 로컬 스토리지에서 가져옴
-      const response = await axios.post(
-        `/api/members/${memberId}/addresses`,
-        address,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Shipping data submitted:", response.data);
-      alert("배송지 정보가 성공적으로 제출되었습니다.");
-    } catch (error) {
-      console.error("Error submitting shipping data:", error);
-      alert("배송지 정보 제출 중 오류가 발생했습니다.");
-    }
+  //   try {
+  //     // 서버로 데이터 전송
+  //     const token = localStorage.getItem("token"); // Authorization 토큰을 로컬 스토리지에서 가져옴
+  //     const response = await axios.post(
+  //       `/api/members/${member.id}/addresses`,
+  //       address,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log("Shipping data submitted:", response.data);
+  //     alert("배송지 정보가 성공적으로 제출되었습니다.");
+  //   } catch (error) {
+  //     console.error("Error submitting shipping data:", error);
+  //     alert("배송지 정보 제출 중 오류가 발생했습니다.");
+  //   }
 
-    // 여기서 address 데이터를 처리하거나 제출할 수 있음
-    console.log("Shipping Address:", address);
-  };
+  //   // 여기서 address 데이터를 처리하거나 제출할 수 있음
+  //   console.log("Shipping Address:", address);
+  // };
 
   /**
    * 아임포트를 활용한 결제 처리 함수

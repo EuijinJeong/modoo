@@ -1,23 +1,21 @@
 package com.example.modoo.service;
 
-import com.example.modoo.dto.PaymentRequestDto;
-import com.example.modoo.dto.PaymentResponseDto;
+import com.example.modoo.dto.OrderHistoryDto;
 import com.example.modoo.dto.PaymentVerifiedDto;
+import com.example.modoo.entity.Member;
+import com.example.modoo.entity.OrderHistory;
 import com.example.modoo.entity.Payment;
 import com.example.modoo.entity.Product;
+import com.example.modoo.repository.MemberRepository;
+import com.example.modoo.repository.OrderHistoryRepository;
 import com.example.modoo.repository.PaymentRepository;
 import com.example.modoo.repository.ProductRepository;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -28,6 +26,12 @@ public class PaymentService {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    OrderHistoryRepository orderHistoryRepository;
+
 
     /**
      * 거래요청이 유효한지를 판단해주는 메서드이다.
@@ -35,12 +39,20 @@ public class PaymentService {
      * @return : 검증 결과를 boolean 형태로 돌려준다.
      */
     @Transactional
-    public boolean verifiedPayment(PaymentVerifiedDto paymentVerifiedDto) {
-
-        // FIXME: PaymentVerifiedDto의 productId가 null로 들어옴.
-
+    public boolean verifiedAndSavePaymentInfo(PaymentVerifiedDto paymentVerifiedDto) {
         Product product = this.productRepository.findById(paymentVerifiedDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product is not found"));
+
+        OrderHistoryDto orderHistoryDto = new OrderHistoryDto();
+        orderHistoryDto.setProductId(paymentVerifiedDto.getProductId());
+        orderHistoryDto.setImpUid(paymentVerifiedDto.getImpUid());
+        orderHistoryDto.setAmount(paymentVerifiedDto.getAmount());
+        orderHistoryDto.setUserEmail(paymentVerifiedDto.getUserEmail());
+
+        // 정보 데이터베이스에 저장함.
+        OrderHistory orderHistory = this.convertToOrderHistory(orderHistoryDto);
+        // FIXME: 아래 값 null이라 오류가 발생함.
+        orderHistoryRepository.save(orderHistory);
 
         return (double) paymentVerifiedDto.getAmount() == (double) product.getPrice();
     }
@@ -54,19 +66,25 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
-    @Transactional
-    public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto) {
-        // DTO를 엔티티로 변환하고 저장
-        Payment payment = new Payment();
-        payment.setImpUid(paymentRequestDto.getImpUid());
-        payment.setAmount(paymentRequestDto.getAmount());
-        payment.setStatus("PAID");
-        payment.setCreatedAt(LocalDateTime.now());
+    private OrderHistory convertToOrderHistory(OrderHistoryDto orderHistoryDto) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        // productId로 Product 객체를 조회
+        Product product = productRepository.findById(orderHistoryDto.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + orderHistoryDto.getProductId()));
 
-        Payment savedPayment = paymentRepository.save(payment);
+        Member member = memberRepository.findByEmail(orderHistoryDto.getUserEmail())
+                .orElseThrow(() -> new RuntimeException("Member is not found"));
 
-        // 저장된 엔티티를 다시 DTO로 변환하여 반환
-        // return PaymentResponseDTO.fromEntity(savedPayment);
-        return null;
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setProduct(product);
+        orderHistory.setAmount(orderHistoryDto.getAmount());
+        orderHistory.setImpUid(orderHistoryDto.getImpUid());
+        orderHistory.setCreatedAt(localDateTime);
+        orderHistory.setMember(member);
+        orderHistory.setStatus("PAID");
+
+        System.out.println(orderHistory);
+
+        return orderHistory;
     }
 }

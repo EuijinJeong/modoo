@@ -1,0 +1,15 @@
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.payment-success-container {
+  margin-top: 5rem;
+  width: 70%;
+}
+
+.payment-info {
+  margin-top: 3rem;
+}
