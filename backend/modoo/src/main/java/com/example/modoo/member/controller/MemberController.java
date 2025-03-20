@@ -1,4 +1,4 @@
-package com.example.modoo.controller;
+package com.example.modoo.member.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;

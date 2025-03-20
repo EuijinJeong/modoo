@@ -59,15 +59,17 @@ public class AuthService {
         return MemberResponseDto.of(member);
     }
 
-    // 로그인
+    /**
+     *
+     * @param memberRequestDto
+     * @return
+     */
     @Transactional
     public TokenDto login(MemberRequestDto memberRequestDto) {
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
-        //    인증 실패 시 AuthenticationException을 발생시킵니다.
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성

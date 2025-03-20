@@ -1,5 +1,6 @@
-package com.example.modoo.controller;
+package com.example.modoo.member.controller;
 
+import com.example.modoo.controller.SignInRequest;
 import com.example.modoo.dto.MemberRequestDto;
 import com.example.modoo.dto.TokenDto;
 import com.example.modoo.service.AuthService;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
  * - 사용자는 로그인 폼에 이메일과 비밀번호를 입력하고, 이 데이터는 JSON 형태로 서버로 전송됩니다.
  * - 서버는 이 정보를 받아 로그인을 시도하고, 성공적으로 로그인되면 토큰 정보를 담은 객체를 JSON 형태로 반환합니다.
  * - 반환된 토큰은 클라이언트에서 이후의 요청에 사용되어 사용자 인증을 유지하는 데 사용됩니다.
+ *
+ * @author jeong-uijin
  */
 
 @RestController

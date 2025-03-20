@@ -61,7 +61,10 @@ public class MemberRequestDto {
                 .build();
     }
 
-    // 사용자의 로그인 시도에 필요한 인증 토큰을 생성
+    /**
+     * 사용자의 로그인 시도에 필요한 인증 토큰을 생성
+     * @return
+     */
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
     }
