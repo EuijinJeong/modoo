@@ -11,32 +11,48 @@ import com.example.modoo.repository.MemberRepository;
 import com.example.modoo.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 /**
- * AuthService 클래스는 회원가입, 로그인, 토큰 재발급과 같은 인증 관련 주요 서비스를 제공합니다.
+ * {@code AuthService} 클래스는 회원가입, 로그인, 토큰 재발급과 같은 인증 관련 주요 서비스를 제공합니다.
+ * <p>
  * 이 클래스는 사용자의 인증 정보를 처리하고, JWT 토큰을 생성 및 관리하는 역할을 담당합니다.
  *
- * 주요 기능:
- * - 회원가입(signup): 사용자로부터 받은 회원가입 요청 정보를 바탕으로 회원 정보를 생성하고 데이터베이스에 저장합니다.
- * - 로그인(login): 사용자의 로그인 요청을 검증하고, 성공적인 인증 후 JWT 토큰을 발급합니다.
- * - 토큰 재발급(reissue): 만료된 접근 토큰(Access Token)의 유효성을 갱신하기 위해 새로운 토큰을 발급합니다.
+ * <h2>주요 기능:</h2>
+ * <ul>
+ * <li><b>회원가입(signup):</b> 사용자로부터 받은 회원가입 요청 정보를 바탕으로 회원 정보를 생성하고 데이터베이스에 저장합니다.</li>
+ * <li><b>로그인(login):</b> 사용자의 로그인 요청을 검증하고, 성공적인 인증 후 JWT 토큰을 발급합니다.</li>
+ * <li><b>토큰 재발급(reissue):</b> 만료된 접근 토큰(Access Token)의 유효성을 갱신하기 위해 새로운 토큰을 발급합니다.</li>
+ * </ul>
  *
- * 각 메소드는 @Transactional 어노테이션을 사용하여 데이터베이스 작업이 모두 성공적으로 완료되거나,
+ * <p>
+ * 각 메소드는 {@code @Transactional} 어노테이션을 사용하여 데이터베이스 작업이 모두 성공적으로 완료되거나,
  * 실패 시 롤백을 보장합니다. 이를 통해 데이터 일관성과 안정성을 유지합니다.
- *
- * 이 서비스는 AuthenticationManagerBuilder를 사용하여 스프링 시큐리티의 인증 메커니즘을 통합하며,
+ * <p>
+ * 이 서비스는 {@code AuthenticationManagerBuilder}를 사용하여 스프링 시큐리티의 인증 메커니즘을 통합하며,
  * 사용자 인증 정보의 유효성을 검증합니다.
+ *
+ * @see org.springframework.transaction.annotation.Transactional
+ * @see org.springframework.security.authentication.AuthenticationManagerBuilder
  */
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -60,7 +76,7 @@ public class AuthService {
     }
 
     /**
-     *
+     * 사용자의 로그인을 처리하는 메소드.
      * @param memberRequestDto
      * @return
      */
@@ -70,25 +86,41 @@ public class AuthService {
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        // TODO 비밀번호 틀렸을 경우 예외처리 해야함.
+        TokenDto tokenDto = null;
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            // 3. 인증 정보를 기반으로 JWT 토큰 생성
+             tokenDto = tokenProvider.generateToken(authentication);
 
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.generateToken(authentication);
+            // 4. RefreshToken 저장
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .key(authentication.getName())
+                    .value(tokenDto.getRefreshToken())
+                    .build();
 
-        // 4. RefreshToken 저장
-        RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
-                .value(tokenDto.getRefreshToken())
-                .build();
+            refreshTokenRepository.save(refreshToken);
 
-        refreshTokenRepository.save(refreshToken);
+            RefreshToken savedToken = refreshTokenRepository.findByKey(authentication.getName()).orElse(null);
+            if (savedToken != null) {
+//                System.out.println("Refresh Token 저장 성공: " + savedToken.getValue());
+                logger.info("Refresh Token 저장 성공: " + savedToken.getValue());
+            } else {
+//                System.out.println("Refresh Token 저장 실패");
+                logger.info("Refresh Token 저장 실패");
+            }
+        } catch (BadCredentialsException bce) {
+            // 아이디 또는 비밀번호가 틀렸을 경우
+            String errorMsg =  bce.getMessage();
 
-        // 디버깅용
-        RefreshToken savedToken = refreshTokenRepository.findByKey(authentication.getName()).orElse(null);
-        if (savedToken != null) {
-            System.out.println("Refresh Token 저장 성공: " + savedToken.getValue());
-        } else {
-            System.out.println("Refresh Token 저장 실패");
+        }
+        // 계정이 비활성화 된 경우
+        catch (DisabledException de) {
+
+        }
+        // 계정이 잠긴 경우
+        catch (LockedException le) {
+
         }
 
         // 5. 토큰 발급
