@@ -2,7 +2,7 @@ package com.example.modoo.controller;
 
 import com.example.modoo.dto.MemberRequestDto;
 import com.example.modoo.dto.MemberResponseDto;
-import com.example.modoo.dto.TokenDto;
+import com.example.modoo.member.dao.TokenDao;
 import com.example.modoo.dto.TokenRequestDto;
 import com.example.modoo.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity<TokenDao> login(@RequestBody MemberRequestDto memberRequestDto) {
         return ResponseEntity.ok(authService.login(memberRequestDto));
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
+    public ResponseEntity<TokenDao> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 }

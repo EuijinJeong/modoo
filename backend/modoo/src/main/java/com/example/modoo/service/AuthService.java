@@ -2,7 +2,7 @@ package com.example.modoo.service;
 
 import com.example.modoo.dto.MemberRequestDto;
 import com.example.modoo.dto.MemberResponseDto;
-import com.example.modoo.dto.TokenDto;
+import com.example.modoo.member.dao.TokenDao;
 import com.example.modoo.dto.TokenRequestDto;
 import com.example.modoo.entity.Member;
 import com.example.modoo.entity.RefreshToken;
@@ -11,7 +11,6 @@ import com.example.modoo.repository.MemberRepository;
 import com.example.modoo.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -81,25 +79,30 @@ public class AuthService {
      * @return
      */
     @Transactional
-    public TokenDto login(MemberRequestDto memberRequestDto) {
+    public TokenDao login(MemberRequestDto memberRequestDto) {
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // TODO 비밀번호 틀렸을 경우 예외처리 해야함.
-        TokenDto tokenDto = null;
+        TokenDao tokenDao = null;
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
             // 3. 인증 정보를 기반으로 JWT 토큰 생성
-             tokenDto = tokenProvider.generateToken(authentication);
+             tokenDao = tokenProvider.generateToken(authentication);
 
             // 4. RefreshToken 저장
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .key(authentication.getName())
-                    .value(tokenDto.getRefreshToken())
-                    .build();
-
-            refreshTokenRepository.save(refreshToken);
+            try {
+                RefreshToken refreshToken = RefreshToken.builder()
+                        .key(authentication.getName())
+                        .value(tokenDao.getRefreshToken())
+                        .build();
+                refreshTokenRepository.save(refreshToken);
+            } catch (IllegalArgumentException iae) {
+                logger.warn(iae.getMessage());
+                throw new IllegalArgumentException("서버상의 이유로 토큰 발급이 불가합니다. 관리자에게 문의 바랍니다.");
+            }
 
             RefreshToken savedToken = refreshTokenRepository.findByKey(authentication.getName()).orElse(null);
             if (savedToken != null) {
@@ -111,25 +114,28 @@ public class AuthService {
             }
         } catch (BadCredentialsException bce) {
             // 아이디 또는 비밀번호가 틀렸을 경우
-            String errorMsg =  bce.getMessage();
-
+            logger.error("Login failed for user '{}'. Incorrect password or username.");
+            throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
         // 계정이 비활성화 된 경우
         catch (DisabledException de) {
-
+            logger.warn("Disabled account access attempt. UserID: {}", memberRequestDto.getEmail());
+            throw new RuntimeException("계정이 비활성화되었습니다.");
         }
         // 계정이 잠긴 경우
         catch (LockedException le) {
-
+            logger.warn("locked account access attempt. UserID: {}", memberRequestDto.getEmail());
+            throw new RuntimeException("계정이 잠겨있습니다.");
         }
 
+        logger.info("Token issuance successful.");
         // 5. 토큰 발급
-        return tokenDto;
+        return tokenDao;
     }
 
     // 토큰 재발급
     @Transactional
-    public TokenDto reissue(TokenRequestDto tokenRequestDto) {
+    public TokenDao reissue(TokenRequestDto tokenRequestDto) {
         // 1. Refresh Token 검증
         if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
@@ -148,13 +154,13 @@ public class AuthService {
         }
 
         // 5. 새로운 토큰 생성
-        TokenDto tokenDto = tokenProvider.generateToken(authentication);
+        TokenDao tokenDao = tokenProvider.generateToken(authentication);
 
         // 6. 저장소 정보 업데이트
-        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
+        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDao.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
 
         // 토큰 발급
-        return tokenDto;
+        return tokenDao;
     }
 }
