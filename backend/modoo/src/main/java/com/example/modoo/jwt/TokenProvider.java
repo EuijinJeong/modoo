@@ -1,6 +1,6 @@
 package com.example.modoo.jwt;
 
-import com.example.modoo.dto.TokenDto;
+import com.example.modoo.member.dao.TokenDao;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -47,7 +47,7 @@ public class TokenProvider {
     }
 
     // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
-    public TokenDto generateToken(Authentication authentication) {
+    public TokenDao generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -83,7 +83,7 @@ public class TokenProvider {
         }
 
         // TokenDto 객체를 생성하여 반환
-        return TokenDto.builder()
+        return TokenDao.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

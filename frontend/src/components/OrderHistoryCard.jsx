@@ -4,6 +4,7 @@ import "../css/order_history_card.css";
 
 const OrderHistoryCard = () => {
   const [product, setProduct] = useState(null);
+  
   return (
     <div>
       <div className="flex-box">
